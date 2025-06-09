@@ -20,3 +20,8 @@ variable "spoke_subnet" {
     b = "10.28.215.192/26"
   }
 }
+
+variable "rg_location" {
+  default     = "eastus"
+  description = "Location of the resource group."
+}

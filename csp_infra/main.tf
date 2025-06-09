@@ -65,3 +65,32 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub_peer" {
   remote_virtual_network_id = azurerm_virtual_network.adot_hub_poc.id
   allow_virtual_network_access = true
 }
+
+# Create VM Resources
+resource "azurerm_windows_virtual_machine" "windows_vm01" {
+  name                  = "windows_vm01"
+  admin_username        = "azureuser"
+  admin_password        = random_password.password.result
+  location = azurerm_resource_group.adot-rg.location
+  resource_group_name = azurerm_resource_group.adot-rg.name
+  network_interface_ids = [azurerm_network_interface.my_terraform_nic.id]
+  size                  = "Standard_DS1_v2"
+
+  os_disk {
+    name                 = "myOsDisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2022-datacenter-azure-edition"
+    version   = "latest"
+  }
+
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.my_storage_account.primary_blob_endpoint
+ }
+}
